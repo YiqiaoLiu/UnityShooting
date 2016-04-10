@@ -9,6 +9,7 @@ public class playerController : MonoBehaviour {
 	public float laserSpeed = 5f;
 	private float lastFireTime;
 	public float fireRate = 1f;
+	public float playerHealthyPoint = 250f;
 
 	float xmin;
 	float xmax;
@@ -28,9 +29,10 @@ public class playerController : MonoBehaviour {
 		ymax = topMost.y - padding;
 	}
 
+	//This is the function about the player's fire
 	void Fire(){
 		lastFireTime = Time.time;
-		GameObject laser = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
+		GameObject laser = Instantiate(projectile, transform.position + new Vector3(0, 1, 0), Quaternion.identity) as GameObject;
 		laser.rigidbody2D.velocity = new Vector2(0, laserSpeed);
 	}
 
@@ -58,8 +60,18 @@ public class playerController : MonoBehaviour {
 				Fire ();
 			}
 		}
-
+		//Finally update the position of the player
 		this.transform.position = new Vector3(Mathf.Clamp(playerPosition.x, xmin, xmax), Mathf.Clamp(playerPosition.y, ymin, ymax), playerPosition.z);	//Restriction of the player's position
+	}
 
+	void OnTriggerEnter2D(Collider2D col){
+		BulletBehaviour bullet = col.gameObject.GetComponent<BulletBehaviour> ();
+		if (bullet != null) {
+			bullet.Hit();
+			playerHealthyPoint -= bullet.damage;
+			if(playerHealthyPoint <= 0){
+				Destroy(gameObject);
+			}
+		}
 	}
 }
