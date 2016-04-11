@@ -11,6 +11,8 @@ public class playerController : MonoBehaviour {
 	public float fireRate = 1f;
 	public float playerHealthyPoint = 250f;
 
+	public AudioClip fireAudio;
+
 	float xmin;
 	float xmax;
 	float ymin;
@@ -34,6 +36,7 @@ public class playerController : MonoBehaviour {
 		lastFireTime = Time.time;
 		GameObject laser = Instantiate(projectile, transform.position + new Vector3(0, 1, 0), Quaternion.identity) as GameObject;
 		laser.rigidbody2D.velocity = new Vector2(0, laserSpeed);
+		AudioSource.PlayClipAtPoint (fireAudio, transform.position);
 	}
 
 	// Update is called once per frame
