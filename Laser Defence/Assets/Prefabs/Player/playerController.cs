@@ -6,10 +6,11 @@ public class playerController : MonoBehaviour {
 	public float speed = 5f;
 	public float padding = 0.5f;	//the offset in the boundry
 	public GameObject projectile;	//The bullet object
-	public float laserSpeed = 5f;
-	private float lastFireTime;
-	public float fireRate = 1f;
-	public float playerHealthyPoint = 250f;
+	public float laserSpeed = 5f;	//The bullet Speed
+	private float lastFireTime;		//To save the last fire time to calculate the interval time
+	public float fireRate = 1f;		//The cooldown rate of the player
+	public float playerHealthyPoint = 250f;	//The player's HP
+	private bool isPowerUp = false;	//To check whther the player power up
 
 	public AudioClip fireAudio;
 
@@ -34,8 +35,19 @@ public class playerController : MonoBehaviour {
 	//This is the function about the player's fire
 	void Fire(){
 		lastFireTime = Time.time;
-		GameObject laser = Instantiate(projectile, transform.position + new Vector3(0, 1, 0), Quaternion.identity) as GameObject;
-		laser.rigidbody2D.velocity = new Vector2(0, laserSpeed);
+
+		
+		if (isPowerUp == false) {
+			//NO POWER UP
+			GameObject laser = Instantiate (projectile, transform.position + new Vector3 (0.5f, 1f, 0f), Quaternion.identity) as GameObject;
+			laser.rigidbody2D.velocity = new Vector2 (0, laserSpeed);
+		} else {
+			//AFTER POWER UP
+			GameObject laser1 = Instantiate (projectile, transform.position + new Vector3 (0.5f, 1f, 0f), Quaternion.identity) as GameObject;
+			laser1.rigidbody2D.velocity = new Vector2 (0, laserSpeed);
+			GameObject laser2 = Instantiate (projectile, transform.position + new Vector3 (-0.5f, 1f, 0f), Quaternion.identity) as GameObject;
+			laser2.rigidbody2D.velocity = new Vector2 (0, laserSpeed);
+		}
 		AudioSource.PlayClipAtPoint (fireAudio, transform.position);
 	}
 
@@ -68,6 +80,10 @@ public class playerController : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D col){
+		if (col.gameObject.tag == "powerup") {
+			isPowerUp = true;
+			Destroy(col.gameObject);
+		}
 		BulletBehaviour bullet = col.gameObject.GetComponent<BulletBehaviour> ();
 		if (bullet != null) {
 			bullet.Hit();
